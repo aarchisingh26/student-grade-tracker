@@ -78,3 +78,23 @@ router.delete('/:courseId/assignments/:assignmentId', verifyToken, async (req, r
     res.status(500).json({ message: 'Failed to delete assignment' });
   }
 });
+
+
+// Update an assignment by ID (needed for editing)
+router.put('/:courseId/assignments/:assignmentId', verifyToken, async (req, res) => {
+  try {
+    const { name, grade, weight } = req.body;
+    const updatedAssignment = await Assignment.findOneAndUpdate(
+      { _id: req.params.assignmentId, courseId: req.params.courseId },
+      { name, grade, weight },
+      { new: true }
+    );
+    if (!updatedAssignment) {
+      return res.status(404).json({ message: 'Assignment not found' });
+    }
+    res.json(updatedAssignment);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to update assignment' });
+  }
+});
